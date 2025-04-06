@@ -1,9 +1,10 @@
 NAME = philo
 LIBNAME = $(NAME).a
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra -g -pthread
 
-CFILES =	SRCS/UTILS/ternaries.c	\
-			SRCS/MAIN/main.c
+CFILES =	SRCS/UTILS/ternaries.c	SRCS/UTILS/printmessages.c \
+			SRCS/MAIN/main.c	\
+			SRCS/PARSER/parser.c
 #SRCS/MAIN/init.c			SRCS/MAIN/quit.c
 OFILES =	$(CFILES:.c=.o)
 

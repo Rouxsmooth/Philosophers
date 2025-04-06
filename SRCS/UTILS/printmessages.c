@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:39:15 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/01 18:22:50 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/06 11:18:43 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,14 @@ int	display_error(char *output)
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
-	while (*s1 == *s2 && *s1)
+	if (!s1 && !s2)
+		return (0);
+	while (*s1 && *s2)
 	{
+		if (*s1 != *s2)
+			return (*s1 - *s2);
 		s1++;
-		s2++;
+		s2++;;
 	}
 	return (*s1 - *s2);
 }
@@ -42,14 +46,14 @@ int	ft_strcmp(const char *s1, const char *s2)
 int messages(int philo, long int time, const char *rule)
 {
 	if (ft_strcmp(rule, "eat") == 0)
-		return (("%6ld %6d is eating\n", time, philo));
+		return (printf("%6ld - %6d is eating\n", time, philo + 1));
 	else if (ft_strcmp(rule, "sleep") == 0)
-		return (("%6ld %6d is sleeping\n", time, philo));
+		return (printf("%6ld - %6d is sleeping\n", time, philo + 1));
 	else if (ft_strcmp(rule, "think") == 0)
-		return (("%6ld %6d is thinking\n", time, philo));
+		return (printf("%6ld - %6d is thinking\n", time, philo + 1));
 	else if (ft_strcmp(rule, "fork") == 0)
-		return (("%6ld %6d has taken a fork\n", time, philo));
+		return (printf("%6ld - %6d has taken a fork\n", time, philo + 1));
 	else if (ft_strcmp(rule, "die") == 0)
-		return (("%6ld %6d died\n", time, philo));
+		return (printf("%6ld - %6d died\n", time, philo + 1));
 	return (1);
 }
