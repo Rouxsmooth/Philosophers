@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/08 12:43:11 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/11 15:45:17 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,14 @@ void	set_philos(t_vals *vals, t_context *ctx)
 {
 	int	i;
 
+	ctx->id = (int *) malloc(sizeof(int));
 	vals->forks = (pthread_mutex_t *) malloc(vals->philos_amount * sizeof(pthread_mutex_t));
 	vals->philos = (t_philo *) malloc(vals->philos_amount * sizeof(t_philo));
 	vals->forks_usage = (int *) malloc(vals->philos_amount * sizeof(int));
 	memset(vals->forks_usage, 1, vals->philos_amount);
 	i = 0;
+	vals->philo_died = 0;
+	ctx->vals = vals;
 	while (i < vals->philos_amount - 1)
 	{
 		vals->philos[i].is_alive = 1;
@@ -53,7 +56,7 @@ void	set_philos(t_vals *vals, t_context *ctx)
 		vals->philos[i].thinks = 0;
 		vals->philos[i].fork1 = -1;
 		vals->philos[i].fork2 = -1;
-		ctx->id = i;
+		*(ctx->id) = i;
 		if (pthread_create(&(vals->philos[i].thread), NULL, &philo_routine, ctx))
 			return (quit("Thread creating error", vals));
 		if (pthread_mutex_init(&(vals->forks[i]), NULL))
@@ -65,23 +68,25 @@ void	set_philos(t_vals *vals, t_context *ctx)
 
 int	main(int argc, char **argv)
 {	
-	t_vals		vals;
-	t_context	ctx;
+	t_vals		*vals;
+	t_context	*ctx;
 	int			i;
 
 	if (argc != 5 && argc != 6)
 		return (display_error(ft_ternary("Missing args!", "Too much args!",
 				argc < 5)));
-	if (parse(&vals, argc, argv) == -1)
-		return (vals.philos_amount = -1, quit("Args error!", &vals), 1);
-	vals.time.start_time = vals.time.tv.tv_usec;
-	gettimeofday(&vals.time.tv, NULL);
-	set_philos(&vals, &ctx);
+	vals = (t_vals *) malloc(sizeof(t_vals));
+	ctx = (t_context *) malloc(sizeof(t_context));
+	if (parse(vals, argc, argv) == -1)
+		return (vals->philos_amount = -1, quit("Args error!", vals), 1);
+	vals->time.start_time = vals->time.tv.tv_usec;
+	gettimeofday(&vals->time.tv, NULL);
+	set_philos(vals, ctx);
 	i = 0;
-	while (i < vals.philos_amount - 1)
-		if (pthread_join(vals.philos[i].thread, NULL))
-			quit("Thread joining error", &vals);
-	quit(NULL, &vals);
+	while (i < vals->philos_amount - 1)
+		if (pthread_join(vals->philos[i].thread, NULL))
+			quit("Thread joining error", vals);
+	quit(NULL, vals);
 	return (0);
 }
 
@@ -109,7 +114,6 @@ void	need2eat(t_vals *vals, t_philo *philo, int currphilo)
 	int			fork2;
 	
 	currtime = get_utime((&vals->time));
-	printf("philos_amount %d %d\n", vals->philos_amount, vals->t2sleep);
 	fork1 = currphilo;
 	fork2 = (currphilo + 1) % vals->philos_amount;
 	if (fork1 > fork2)
@@ -190,25 +194,29 @@ void	*philo_routine(void *arg)
 {
 	t_context	ctx;
 	t_philo		philo;
+	int			id;
 
 	ctx = *(t_context *)arg;
-	philo = ctx.vals->philos[ctx.id];
+	id = *(ctx.id);
+	free(ctx.id);
+	printf("philo id%d, philo is %s \n", id, ctx.vals->philo_died ? "dead" : "alive");
+	philo = ctx.vals->philos[id];
 	while (philo.is_alive)
 	{
 		check_dead_philo(ctx.vals, &philo);
 		if (philo.thinks)
-			need2eat(ctx.vals, &philo, ctx.id);
+			need2eat(ctx.vals, &philo, *(ctx.id));
 		check_dead_philo(ctx.vals, &philo);
 		if (!philo.is_alive)
 			break ;
 		if (philo.eatstart)
-			check_t2eat(ctx.vals, &philo, ctx.id);
+			check_t2eat(ctx.vals, &philo, *(ctx.id));
 		check_dead_philo(ctx.vals, &philo);
 		if (philo.sleepstart)
-			check_t2sleep(ctx.vals, &philo, ctx.id);
+			check_t2sleep(ctx.vals, &philo, *(ctx.id));
 		usleep(1);
 	}
-	messages(ctx.id, get_utime(&(ctx.vals->time)), "die");
+	messages(*(ctx.id), get_utime(&(ctx.vals->time)), "die");
 	ctx.vals->philo_died = 1;
 	return (NULL);
 }
