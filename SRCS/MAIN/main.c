@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/14 17:32:47 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/14 17:40:42 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ long int	get_utime(t_time *time)
 
 int	take_fork(t_vals *vals, int fork, int currtime, int currphilo)
 {
+	printf("forks : %p, curr_fork %d\n\n", vals->forks_usage, fork);
 	if (!vals->forks_usage[fork])
 		return (0);
 	pthread_mutex_lock(&vals->forks[fork]);
@@ -104,15 +105,16 @@ void	need2eat(t_vals *vals, t_philo *philo, int currphilo)
 	currtime = get_utime((&vals->time));
 	fork1 = currphilo;
 	fork2 = (currphilo + 1) % vals->philos_amount;
+	printf("in need2eat : fork1 %d fork2 %d\n", fork1, fork2);
 	if (fork1 > fork2)
 	{
 		fork1 ^= fork2;
 		fork2 ^= fork1;
 		fork1 ^= fork2;
 	}
-	if (take_fork(vals, currtime, fork1, currphilo))
+	if (take_fork(vals, fork1, currtime, currphilo))
 		philo->fork1 = fork1;
-	if (take_fork(vals, currtime, fork2, currphilo))
+	if (take_fork(vals, fork2, currtime, currphilo))
 		philo->fork2 = fork2;
 	if (philo->fork1 != -1 && philo->fork2 != -1)
 	{
