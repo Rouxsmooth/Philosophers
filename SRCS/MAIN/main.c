@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/14 16:24:21 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/14 17:32:47 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	quit(char *error_msg, t_vals *vals)
 {
-	//del vals if needed
 	int	i;
 
 	i = 0;
@@ -40,14 +39,17 @@ void	set_philos(t_vals *vals, t_context *ctx)
 	memset(vals->forks_usage, 1, vals->philos_amount);
 	i = 0;
 	vals->philo_died = 0;
-	ctx->vals = vals;
 	while (i < vals->philos_amount - 1)
 	{
 		vals->philos[i] = (t_philo) {0};
+		vals->philos[i].thinks = 1;
 		vals->philos[i].is_alive = 1;
 		vals->philos[i].fork1 = -1;
 		vals->philos[i].fork2 = -1;
-		ctx->id = i + 1;
+		ctx->vals = vals;
+		printf("before : vals %p\n\n", ctx->vals);
+		//printf("fork1 %d fork2 %d\n", ctx->vals->philos[i].fork1, ctx->vals->philos[i].fork2);
+		ctx->id = i;
 		if (pthread_create(&(vals->philos[i].thread), NULL, &philo_routine, ctx))
 			return (quit("Thread creating error", vals));
 		if (pthread_mutex_init(&(vals->forks[i]), NULL))
@@ -165,15 +167,15 @@ void	check_t2sleep(t_vals *vals, t_philo *philo, int currphilo)
 	return ;
 }
 
-void	check_dead_philo(t_vals *vals, t_philo *philo)
+int	check_dead_philo(t_vals *vals, t_philo *philo)
 {
 	if (!vals->philo_died)
-		return ;
+		return (0);
 	if (philo->fork1 != -1)
 		pthread_mutex_unlock(&(vals->forks[philo->fork1]));
 	if (philo->fork2 != -1)
 		pthread_mutex_unlock(&(vals->forks[philo->fork2]));
-	return ;
+	return (1);
 }
 
 void	*philo_routine(void *arg)
@@ -182,19 +184,25 @@ void	*philo_routine(void *arg)
 	t_philo		philo;
 
 	ctx = *(t_context *)arg;
-	printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
 	philo = ctx.vals->philos[ctx.id];
+	printf("in philo: vals %p\n\n", ctx.vals);
+	printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
+	if (check_dead_philo(ctx.vals, &philo))
+		return (NULL);
 	while (philo.is_alive)
 	{
-		check_dead_philo(ctx.vals, &philo);
+		if (check_dead_philo(ctx.vals, &philo))
+			return (NULL);
 		if (philo.thinks)
 			need2eat(ctx.vals, &philo, ctx.id);
-		check_dead_philo(ctx.vals, &philo);
+		if (check_dead_philo(ctx.vals, &philo))
+			return (NULL);
 		if (!philo.is_alive)
 			break ;
 		if (philo.eatstart)
 			check_t2eat(ctx.vals, &philo, ctx.id);
-		check_dead_philo(ctx.vals, &philo);
+		if (check_dead_philo(ctx.vals, &philo))
+			return (NULL);
 		if (philo.sleepstart)
 			check_t2sleep(ctx.vals, &philo, ctx.id);
 		usleep(1);
