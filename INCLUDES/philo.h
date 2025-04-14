@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/11 15:42:18 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/14 16:10:02 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct s_vals
 
 typedef struct s_context
 {
-	int		*id;
+	int		id;
 	t_vals	*vals;
 }	t_context;
 

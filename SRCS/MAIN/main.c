@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/11 15:45:17 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/14 16:24:21 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,7 @@ void	quit(char *error_msg, t_vals *vals)
 	if (vals->philos_amount == -1)
 		exit(0);
 	while (i < vals->philos_amount - 1)
-	{
-		pthread_mutex_destroy(&(vals->forks[i]));
-		free(&(vals->philos[i]));
-		i++;
-	}
+		pthread_mutex_destroy(&(vals->forks[i++]));
 	free(vals->forks);
 	free(vals->forks_usage);
 	free(vals->philos);
@@ -38,7 +34,6 @@ void	set_philos(t_vals *vals, t_context *ctx)
 {
 	int	i;
 
-	ctx->id = (int *) malloc(sizeof(int));
 	vals->forks = (pthread_mutex_t *) malloc(vals->philos_amount * sizeof(pthread_mutex_t));
 	vals->philos = (t_philo *) malloc(vals->philos_amount * sizeof(t_philo));
 	vals->forks_usage = (int *) malloc(vals->philos_amount * sizeof(int));
@@ -48,19 +43,17 @@ void	set_philos(t_vals *vals, t_context *ctx)
 	ctx->vals = vals;
 	while (i < vals->philos_amount - 1)
 	{
+		vals->philos[i] = (t_philo) {0};
 		vals->philos[i].is_alive = 1;
-		vals->philos[i].has_eaten = 0;
-		vals->philos[i].has_slept = 0;
-		vals->philos[i].eatstart = 0;
-		vals->philos[i].sleepstart = 0;
-		vals->philos[i].thinks = 0;
 		vals->philos[i].fork1 = -1;
 		vals->philos[i].fork2 = -1;
-		*(ctx->id) = i;
+		ctx->id = i + 1;
 		if (pthread_create(&(vals->philos[i].thread), NULL, &philo_routine, ctx))
 			return (quit("Thread creating error", vals));
 		if (pthread_mutex_init(&(vals->forks[i]), NULL))
 			return (quit("Mutex creating error", vals));
+		if (pthread_join(vals->philos[i].thread, NULL))
+			quit("Thread joining error", vals);
 		i++;
 	}
 	return ;
@@ -68,25 +61,18 @@ void	set_philos(t_vals *vals, t_context *ctx)
 
 int	main(int argc, char **argv)
 {	
-	t_vals		*vals;
-	t_context	*ctx;
-	int			i;
+	t_vals		vals;
+	t_context	ctx;
 
 	if (argc != 5 && argc != 6)
 		return (display_error(ft_ternary("Missing args!", "Too much args!",
 				argc < 5)));
-	vals = (t_vals *) malloc(sizeof(t_vals));
-	ctx = (t_context *) malloc(sizeof(t_context));
-	if (parse(vals, argc, argv) == -1)
-		return (vals->philos_amount = -1, quit("Args error!", vals), 1);
-	vals->time.start_time = vals->time.tv.tv_usec;
-	gettimeofday(&vals->time.tv, NULL);
-	set_philos(vals, ctx);
-	i = 0;
-	while (i < vals->philos_amount - 1)
-		if (pthread_join(vals->philos[i].thread, NULL))
-			quit("Thread joining error", vals);
-	quit(NULL, vals);
+	if (parse(&vals, argc, argv) == -1)
+		return (vals.philos_amount = -1, quit("Args error!", &vals), 1);
+	gettimeofday(&vals.time.tv, NULL);
+	vals.time.start_time = vals.time.tv.tv_usec;
+	set_philos(&vals, &ctx);
+	quit(NULL, &vals);
 	return (0);
 }
 
@@ -194,29 +180,26 @@ void	*philo_routine(void *arg)
 {
 	t_context	ctx;
 	t_philo		philo;
-	int			id;
 
 	ctx = *(t_context *)arg;
-	id = *(ctx.id);
-	free(ctx.id);
-	printf("philo id%d, philo is %s \n", id, ctx.vals->philo_died ? "dead" : "alive");
-	philo = ctx.vals->philos[id];
+	printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
+	philo = ctx.vals->philos[ctx.id];
 	while (philo.is_alive)
 	{
 		check_dead_philo(ctx.vals, &philo);
 		if (philo.thinks)
-			need2eat(ctx.vals, &philo, *(ctx.id));
+			need2eat(ctx.vals, &philo, ctx.id);
 		check_dead_philo(ctx.vals, &philo);
 		if (!philo.is_alive)
 			break ;
 		if (philo.eatstart)
-			check_t2eat(ctx.vals, &philo, *(ctx.id));
+			check_t2eat(ctx.vals, &philo, ctx.id);
 		check_dead_philo(ctx.vals, &philo);
 		if (philo.sleepstart)
-			check_t2sleep(ctx.vals, &philo, *(ctx.id));
+			check_t2sleep(ctx.vals, &philo, ctx.id);
 		usleep(1);
 	}
-	messages(*(ctx.id), get_utime(&(ctx.vals->time)), "die");
+	messages(ctx.id, get_utime(&(ctx.vals->time)), "die");
 	ctx.vals->philo_died = 1;
 	return (NULL);
 }
