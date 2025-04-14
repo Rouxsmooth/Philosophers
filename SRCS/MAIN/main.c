@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/14 17:40:42 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/14 17:44:11 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ long int	get_utime(t_time *time)
 
 int	take_fork(t_vals *vals, int fork, int currtime, int currphilo)
 {
-	printf("forks : %p, curr_fork %d\n\n", vals->forks_usage, fork);
 	if (!vals->forks_usage[fork])
 		return (0);
 	pthread_mutex_lock(&vals->forks[fork]);
@@ -105,7 +104,6 @@ void	need2eat(t_vals *vals, t_philo *philo, int currphilo)
 	currtime = get_utime((&vals->time));
 	fork1 = currphilo;
 	fork2 = (currphilo + 1) % vals->philos_amount;
-	printf("in need2eat : fork1 %d fork2 %d\n", fork1, fork2);
 	if (fork1 > fork2)
 	{
 		fork1 ^= fork2;
@@ -187,8 +185,7 @@ void	*philo_routine(void *arg)
 
 	ctx = *(t_context *)arg;
 	philo = ctx.vals->philos[ctx.id];
-	printf("in philo: vals %p\n\n", ctx.vals);
-	printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
+	//printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
 	if (check_dead_philo(ctx.vals, &philo))
 		return (NULL);
 	while (philo.is_alive)
