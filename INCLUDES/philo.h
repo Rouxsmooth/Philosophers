@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/14 16:10:02 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/21 15:20:50 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@
 
 typedef struct s_philo
 {
-	int				is_alive;
 	int				fork1;
 	int				fork2;
-	int				has_slept;
 	int				has_eaten;
+	int				has_slept;
+	int				is_alive;
 	int				thinks;
 	long int		eatstart;
 	long int		sleepstart;
@@ -67,5 +67,6 @@ int		display_error(char *output);
 int		parse(t_vals *vals, int argc, char **argv);
 int		messages(int philo, long int time, const char *rule);
 void	*philo_routine(void *arg);
+void	print_philo_vals(t_philo *philo);
 
 #endif

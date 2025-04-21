@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:38:35 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/08 12:32:36 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/21 14:47:07 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	ft_atoi(const char *nptr)
 		nbr += (nptr[i] - 48);
 		i++;
 	}
-	return ((nbr > -1) * nbr + (nbr <= 0) * -1);
+	return ((nbr > 0) * nbr + (nbr <= 0) * -1);
 }
 
 int	parse(t_vals *vals, int argc, char **argv)

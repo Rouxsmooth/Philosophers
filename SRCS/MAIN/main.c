@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/14 17:44:11 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/04/21 15:23:45 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ void	set_philos(t_vals *vals, t_context *ctx)
 		vals->philos[i].fork1 = -1;
 		vals->philos[i].fork2 = -1;
 		ctx->vals = vals;
-		printf("before : vals %p\n\n", ctx->vals);
-		//printf("fork1 %d fork2 %d\n", ctx->vals->philos[i].fork1, ctx->vals->philos[i].fork2);
 		ctx->id = i;
 		if (pthread_create(&(vals->philos[i].thread), NULL, &philo_routine, ctx))
 			return (quit("Thread creating error", vals));
@@ -71,8 +69,6 @@ int	main(int argc, char **argv)
 				argc < 5)));
 	if (parse(&vals, argc, argv) == -1)
 		return (vals.philos_amount = -1, quit("Args error!", &vals), 1);
-	gettimeofday(&vals.time.tv, NULL);
-	vals.time.start_time = vals.time.tv.tv_usec;
 	set_philos(&vals, &ctx);
 	quit(NULL, &vals);
 	return (0);
@@ -118,7 +114,7 @@ void	need2eat(t_vals *vals, t_philo *philo, int currphilo)
 	{
 		messages(currphilo, currtime, "eat");		
 		philo->eatstart = currtime;
-		philo->thinks = 0;
+		philo->thinks = -1;
 	}
 	return ;
 }
@@ -129,10 +125,14 @@ void	set2sleep(t_vals *vals, t_philo *philo, int currphilo)
 
 	sleeptime = get_utime(&(vals->time));
 	messages(currphilo, sleeptime, "sleep");
+	pthread_mutex_unlock(&(vals->forks[philo->fork1]));
+	pthread_mutex_unlock(&(vals->forks[philo->fork2]));
+	philo->eatstart = -1;
 	philo->fork1 = -1;
 	philo->fork2 = -1;
 	philo->sleepstart = sleeptime;
-	philo->thinks = 0;
+	philo->thinks = -1;
+	print_philo_vals(philo);
 	return ;
 }
 
@@ -141,15 +141,9 @@ void	check_t2eat(t_vals *vals, t_philo *philo, int currphilo)
 	int	currtime;
 
 	currtime = get_utime(&(vals->time));
+	printf("time %ld\n", currtime - philo->eatstart);
 	if (currtime - philo->eatstart > vals->t2eat)
-	{
-		philo->fork1 = 0;
-		philo->fork2 = 0;
-		pthread_mutex_unlock(&(vals->forks[philo->fork1]));
-		pthread_mutex_unlock(&(vals->forks[philo->fork2]));
-		philo->eatstart = 0;
 		return (set2sleep(vals, philo, currphilo));
-	}
 	return ;
 }
 
@@ -160,7 +154,7 @@ void	check_t2sleep(t_vals *vals, t_philo *philo, int currphilo)
 	currtime = get_utime(&(vals->time));
 	if (currtime - philo->sleepstart > vals->t2sleep)
 	{
-		philo->sleepstart = 0;
+		philo->sleepstart = -1;
 		philo->thinks = currtime;
 		messages(currphilo, currtime, "think");
 	}
@@ -188,21 +182,18 @@ void	*philo_routine(void *arg)
 	//printf("philo id%d, philo is %s \n", ctx.id, ctx.vals->philo_died ? "dead" : "alive");
 	if (check_dead_philo(ctx.vals, &philo))
 		return (NULL);
+	gettimeofday(&ctx.vals->time.tv, NULL);
+	ctx.vals->time.start_time = ctx.vals->time.tv.tv_usec;
+	//print_philo_vals(&philo);
 	while (philo.is_alive)
 	{
-		if (check_dead_philo(ctx.vals, &philo))
-			return (NULL);
-		if (philo.thinks)
+		if (philo.thinks != -1)
 			need2eat(ctx.vals, &philo, ctx.id);
-		if (check_dead_philo(ctx.vals, &philo))
-			return (NULL);
 		if (!philo.is_alive)
 			break ;
-		if (philo.eatstart)
+		if (philo.eatstart != -1)
 			check_t2eat(ctx.vals, &philo, ctx.id);
-		if (check_dead_philo(ctx.vals, &philo))
-			return (NULL);
-		if (philo.sleepstart)
+		if (philo.sleepstart != -1)
 			check_t2sleep(ctx.vals, &philo, ctx.id);
 		usleep(1);
 	}
