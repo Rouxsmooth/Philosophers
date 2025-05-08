@@ -1,7 +1,15 @@
 #include "INCLUDES/philo.h"
 
+
+typedef struct s_mute
+{
+	pthread_mutex_t	*mutex;
+}	t_mute;
 int main(void)
 {
-	printf("t_vals : %ld | sum of its components sizes : %ld, int %ld, int * %ld\n", sizeof(t_vals), 4 * sizeof(int) + sizeof(int *) + sizeof(t_time) + sizeof(t_philo *), sizeof(int), sizeof(int *));
-	printf("t_philo %ld, t_philo * %ld\n", sizeof(t_philo), sizeof(t_philo *));
+	t_mute mute;
+
+	mute.mutex = malloc(sizeof(pthread_mutex_t));
+	if (mute.mutex[0] != NULL)
+		printf("%d\n", mute.mutex);
 }

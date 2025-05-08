@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/21 15:20:50 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/08 18:29:08 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,18 @@
 # include <unistd.h>
 # include <sys/time.h>
 
+typedef struct s_mutexes
+{
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	*philos;
+	pthread_mutex_t	meal_amount;
+	pthread_mutex_t	philo_died;
+	pthread_mutex_t	philos_amount;
+	pthread_mutex_t	t2die;
+	pthread_mutex_t	t2eat;
+	pthread_mutex_t	t2sleep;
+}	t_mutexes;
+
 typedef struct s_philo
 {
 	int				fork1;
@@ -28,8 +40,6 @@ typedef struct s_philo
 	int				has_slept;
 	int				is_alive;
 	int				thinks;
-	long int		eatstart;
-	long int		sleepstart;
 	pthread_t		thread;
 }	t_philo;
 
@@ -42,16 +52,15 @@ typedef struct s_time
 
 typedef struct s_vals
 {
-	int				t2eat;
 	int				t2die;
+	int				t2eat;
 	int				t2sleep;
-	int				philos_amount;
-	// int		eat_amount;
-	int				*forks_usage;
 	int				philo_died;
-	pthread_mutex_t	*forks;
-	t_time			time;
+	int				philos_amount;
+	int				*forks_usage;
+	t_mutexes		mutexes;
 	t_philo			*philos;
+	t_time			time;
 }	t_vals;
 
 typedef struct s_context
@@ -68,5 +77,6 @@ int		parse(t_vals *vals, int argc, char **argv);
 int		messages(int philo, long int time, const char *rule);
 void	*philo_routine(void *arg);
 void	print_philo_vals(t_philo *philo);
+void	quit(char *error_msg, t_vals *vals);
 
 #endif
