@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/08 19:26:37 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/11 20:13:09 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,57 +43,43 @@ void	clear_mutexes(t_vals *vals, t_mutexes *mutexes)
 void	set_forks_philos(t_vals *vals, t_mutexes *mutexes)
 {
 	int	i;
+	int	philo_amount;
 
 	i = -1;
+	philo_amount = vals->philos_amount;
 	mutexes->forks = (pthread_mutex_t *)
-		malloc(vals->philos_amount * sizeof(pthread_mutex_t));
+		malloc(philo_amount * sizeof(pthread_mutex_t));
 	if (!mutexes->forks)
 		return (quit("mutex init error", vals), (void) 0);
 	mutexes->philos = (pthread_mutex_t *)
-		malloc(vals->philos_amount * sizeof(pthread_mutex_t));
+		malloc(philo_amount * sizeof(pthread_mutex_t));
 	if (!mutexes->philos)
 		return (quit("mutex init error", vals), (void) 0);
-	while (++i < vals->philos_amount)
+	while (++i < philo_amount)
 		if (pthread_mutex_init(&(mutexes->forks[i]), NULL))
-			return (quit("mutex init error", vals), -1);
+			return (quit("mutex init error", vals));
 	i--;
-	while (++i < 2 * vals->philos_amount)
-		if (pthread_mutex_init(&(mutexes->forks[i - vals->philos_amount]), NULL))
-			return (quit("mutex init error", vals), -1);
+	while (++i < 2 * philo_amount)
+		if (pthread_mutex_init(&(mutexes->forks[i - philo_amount]), NULL))
+			return (quit("mutex init error", vals));
 	return ;
 }
 
 void	set_mutexes(t_vals *vals, t_mutexes *mutexes)
 {
 	if (pthread_mutex_init(&mutexes->meal_amount, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	if (pthread_mutex_init(&mutexes->philo_died, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	if (pthread_mutex_init(&mutexes->philos_amount, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	if (pthread_mutex_init(&mutexes->t2die, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	if (pthread_mutex_init(&mutexes->t2eat, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	if (pthread_mutex_init(&mutexes->t2sleep, NULL))
-		return (quit("mutex init error", vals), (t_mutexes){0});
+		return (quit("mutex init error", vals), (void) 0);
 	return ;
-}
-
-t_vals	set_vals(int argc, char **argv)
-{
-	t_vals	vals;
-
-	vals = (t_vals) {0};
-	if (parse(&vals, argc, argv) == -1)
-		return (vals.philos_amount = -1, quit("Args error!", &vals), (t_vals) {0});
-	vals.philos = (t_philo *) malloc(vals.philos_amount * sizeof(t_philo));
-	if (!vals.philos)
-		quit("Alloc error", &vals);
-	vals.forks_usage = (int *) malloc(vals.philos_amount * sizeof(int));
-	if (!vals.forks_usage)
-		quit("Alloc error", &vals);
-	memset(vals.forks_usage, 1, vals.philos_amount);
 }
 
 void	set_philos(t_vals *vals, t_context ctx)
@@ -110,14 +96,37 @@ void	set_philos(t_vals *vals, t_context ctx)
 		vals->philos[i].fork2 = -1;
 		ctx.vals = vals;
 		ctx.id = i;
-		if (pthread_create(&(vals->philos[i].thread), NULL, &philo_routine, &ctx))
+		if (pthread_create(&(vals->philos[i].thread), NULL,
+			&philo_routine, &ctx))
 			return (quit("Thread creating error", vals));
 		i++;
 	}
 	i = 0;
-	whiel (i < vals->philos_amount - 1)
+	while (i < vals->philos_amount - 1)
 	{
-		
+		if (pthread_join(vals->philos[i].thread, NULL))
+			return (quit("Thread joining error", vals));
+		i++;
 	}
+	return ;
+}
+
+void	set_vals(int argc, char **argv)
+{
+	t_vals		vals;
+	t_context	ctx;
+
+	vals = (t_vals) {0};
+	if (parse(&vals, argc, argv) == -1)
+		quit("Args error!", NULL);
+	vals.philos = (t_philo *) malloc(vals.philos_amount * sizeof(t_philo));
+	if (!vals.philos)
+		quit("Alloc error", &vals);
+	vals.forks_usage = (int *) malloc(vals.philos_amount * sizeof(int));
+	if (!vals.forks_usage)
+		quit("Alloc error", &vals);
+	vals.forks_usage = memset(vals.forks_usage, 1, vals.philos_amount);
+	ctx = (t_context) {0};
+	set_philos(&vals, ctx);
 	return ;
 }

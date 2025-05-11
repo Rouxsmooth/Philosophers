@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:39:15 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/21 15:04:33 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/11 19:53:40 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,8 @@ int messages(int philo, long int time, const char *rule)
 void	print_philo_vals(t_philo *philo)
 {
 	printf("{philo %p -> (F1 %d), (F2 %d), (has_eaten %d), (has_slept %d), \
-(is_alive %d), (thinks %d), (eastart %ld), (sleepstart %ld), (thread %lu)}\n",
+(is_alive %d), (thinks %d), (thread %lu)}\n",
 	philo, philo->fork1, philo->fork2, philo->has_eaten, philo->has_slept,
-	philo->is_alive, philo->thinks, philo->eatstart, philo->sleepstart,
-	philo->thread);
+	philo->is_alive, philo->thinks,	philo->thread);
 	return ;
 }

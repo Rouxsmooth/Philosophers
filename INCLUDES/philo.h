@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/08 18:29:08 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/11 20:12:46 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,7 @@ int		messages(int philo, long int time, const char *rule);
 void	*philo_routine(void *arg);
 void	print_philo_vals(t_philo *philo);
 void	quit(char *error_msg, t_vals *vals);
+void	clear_mutexes(t_vals *vals, t_mutexes *mutexes);
+void	set_vals(int argc, char **argv);
 
 #endif
