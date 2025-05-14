@@ -6,19 +6,19 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 19:05:40 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 19:47:29 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
 
-t_grim	set_grim(t_vals *vals)
+t_grim	set_grim(void)
 {
 	t_grim	grim;
 
 	grim.current_prey = 1;
 	grim.message_allowed = 0;
-	grim.time = (t_time) {0};
+	grim.time = (t_time){0};
 	grim.current_prey_starttime = -1;
 	return (grim);
 }
@@ -98,8 +98,9 @@ void	set_vals(int argc, char **argv)
 	vals->delayed_start = time.tv_usec + 50;
 	if (parse(vals, argc, argv) == -1)
 		quit("Args error!", NULL);
-	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1) * sizeof(pthread_t));
-	if (!*vals->threads)
+	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1)
+			* sizeof(pthread_t));
+	if (!vals->threads)
 		quit("Alloc error", vals);
 	vals->id_log = (int *) malloc(vals->philos_amount * sizeof(int));
 	if (!vals->id_log)
@@ -108,6 +109,6 @@ void	set_vals(int argc, char **argv)
 	while (i < vals->philos_amount)
 		vals->id_log[i++] = 0;
 	vals->mutexes = set_mutexes(vals);
-	start_philos(vals, set_grim(vals));
+	start_philos(vals, set_grim());
 	return ;
 }

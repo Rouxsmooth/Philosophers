@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 18:29:42 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 19:34:08 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,12 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	messages(id, get_utime(&philo->time.tv), "fork");
+	messages(id, get_utime(&philo->time), "fork");
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	currtime = get_utime(&philo->time.tv);
+	currtime = get_utime(&philo->time);
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
 	vals->id_log[id] = currtime + vals->t2eat;

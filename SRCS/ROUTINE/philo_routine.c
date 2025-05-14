@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 17:02:26 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 19:33:00 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	delayed_start(t_time *time, long int actual_start)
 {
-	while (get_utime(&time) < actual_start)
+	while (get_utime(time) < actual_start)
 		usleep(1);
 }
 
-t_philo	*set_philos(int id)
+t_philo	set_philos(void)
 {
 	t_philo	philo;
 
@@ -27,7 +27,7 @@ t_philo	*set_philos(int id)
 	philo.is_alive = 1;
 	philo.fork1 = -1;
 	philo.fork2 = -1;
-	return (&philo);
+	return (philo);
 }
 
 void	check_dead_philo(t_vals *vals, t_philo *philo)
@@ -45,19 +45,20 @@ void	*philo_routine(void *arg)
 {
 	int			id;
 	t_vals		*vals;
-	t_philo		*philo;
+	t_philo		philo;
 
 	id = *(int *)arg;
 	free(arg);
-	philo = set_philos(id);
-	check_dead_philo(vals, philo);
-	gettimeofday(&philo->time.tv, NULL);
-	philo->time.start_time = philo->time.tv.tv_usec;
-	delayed_start(time, vals->delayed_start);
-	while (philo->is_alive)
+	philo = set_philos();
+	vals = get_vals();
+	check_dead_philo(vals, &philo);
+	gettimeofday(&philo.time.tv, NULL);
+	philo.time.start_time = philo.time.tv.tv_usec;
+	delayed_start(&philo.time, vals->delayed_start);
+	while (philo.is_alive)
 	{
-		set2eating(vals, philo, id);
-		set2sleep(vals, philo, id);
+		set2eating(vals, &philo, id);
+		set2sleep(vals, &philo, id);
 	}
-	return ;
+	return (NULL);
 }

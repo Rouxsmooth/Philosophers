@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 18:54:35 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 19:44:45 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@
 # include <pthread.h>
 # include <unistd.h>
 # include <sys/time.h>
+
+typedef struct s_time
+{
+	struct timeval	tv;
+	long int		start_time;
+	long int		curr_time;
+}	t_time;
 
 typedef struct s_grim
 {
@@ -44,13 +51,6 @@ typedef struct s_philo
 	t_time		time;
 }	t_philo;
 
-typedef struct s_time
-{
-	struct timeval	tv;
-	long int		start_time;
-	long int		curr_time;
-}	t_time;
-
 typedef struct s_vals
 {
 	int			*id_log;
@@ -65,25 +65,17 @@ typedef struct s_vals
 	t_mutexes	mutexes;
 }	t_vals;
 
-//typedef struct s_context
-//{
-//	int			id;
-//	t_vals		*vals;
-//}	t_context;
-
-/* ternaries */
-void	*ft_ternary(void *output1, void *output2, int condition);
-int		ft_intternary(int i1, int i2, int condition);
-int		display_error(char *output);
-int		parse(t_vals *vals, int argc, char **argv);
-int		messages(int philo, long int time, const char *rule);
-void	*philo_routine(void *arg);
-void	print_philo_vals(t_philo *philo);
-void	quit(char *error_msg, t_vals *vals);
-void	clear_mutexes(t_vals *vals, t_mutexes *mutexes);
-void	set_vals(int argc, char **argv);
-t_vals	*get_vals(void);
+int			display_error(char *output);
+int			parse(t_vals *vals, int argc, char **argv);
+int			messages(int philo, long int time, const char *rule);
+void		*philo_routine(void *arg);
+void		quit(char *error_msg, t_vals *vals);
+void		clear_mutexes(t_vals *vals, t_mutexes *mutexes);
+void		set_vals(int argc, char **argv);
+t_vals		*get_vals(void);
 long int	get_utime(t_time *time);
-void	grim_reaper_routine(void *arg);
-void	delayed_start(t_time *time, long int actual_start);
+void		*grim_reaper_routine(void *arg);
+void		delayed_start(t_time *time, long int actual_start);
+void		set2sleep(t_vals *vals, t_philo *philo, int id);
+void		set2eating(t_vals *vals, t_philo *philo, int id);
 #endif

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:38:35 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 16:07:46 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 19:46:22 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,6 @@ int	parse(t_vals *vals, int argc, char **argv)
 	if (vals->philos_amount == -1 || vals->t2die == -1 || vals->t2eat == -1
 		|| vals->t2sleep == -1 || vals->t2die < 60 || vals->t2eat < 60
 		|| vals->t2sleep < 60 || vals->philos_amount >= 200)
-			return (-1);
+		return (-1);
 	return (1);
 }
