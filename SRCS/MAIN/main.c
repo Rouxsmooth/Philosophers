@@ -6,11 +6,18 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/11 20:09:22 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 14:34:43 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
+
+t_vals	*get_vals(void)
+{
+	static t_vals	vals = (t_vals){0};
+
+	return (&vals);
+}
 
 void	quit(char *error_msg, t_vals *vals)
 {
@@ -19,8 +26,8 @@ void	quit(char *error_msg, t_vals *vals)
 		clear_mutexes(vals, &vals->mutexes);
 		if (vals->forks_usage)
 			free(vals->forks_usage);
-		if (vals->philos)
-			free(vals->philos);
+		if (vals->threads)
+			free(vals->threads);
 	}
 	if (error_msg)
 		display_error(error_msg);

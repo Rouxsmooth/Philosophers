@@ -6,11 +6,27 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/11 20:13:09 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 16:09:10 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
+
+t_grim	set_grim(t_vals *vals)
+{
+	t_grim	grim;
+	int	i;
+
+	grim.hunting_down = 1;
+	grim.message_allowed = 0;
+	grim.id_log = (int *) malloc(vals->philos_amount * sizeof(int));
+	if (!grim.id_log)
+		quit("Alloc error", vals);
+	i = 0;
+	while (i < vals->philos_amount)
+		grim.id_log[i++] = 0;
+	return (grim);
+}
 
 void	clear_mutexes(t_vals *vals, t_mutexes *mutexes)
 {
@@ -24,87 +40,49 @@ void	clear_mutexes(t_vals *vals, t_mutexes *mutexes)
 		free(mutexes->forks);
 		mutexes->forks = NULL;
 	}
-	if (mutexes->philos)
-	{
-		while (i < vals->philos_amount * 2)
-			pthread_mutex_destroy(&mutexes->philos[i - vals->philos_amount]);
-		free(mutexes->philos);
-		mutexes->philos = NULL;
-	}
-	pthread_mutex_destroy(&mutexes->meal_amount);
-	pthread_mutex_destroy(&mutexes->philo_died);
-	pthread_mutex_destroy(&mutexes->philos_amount);
-	pthread_mutex_destroy(&mutexes->t2die);
-	pthread_mutex_destroy(&mutexes->t2eat);
-	pthread_mutex_destroy(&mutexes->t2sleep);
+	pthread_mutex_destroy(&mutexes->message);
 	return ;
 }
 
-void	set_forks_philos(t_vals *vals, t_mutexes *mutexes)
+t_mutexes	set_mutexes(t_vals *vals)
 {
-	int	i;
-	int	philo_amount;
-
-	i = -1;
-	philo_amount = vals->philos_amount;
-	mutexes->forks = (pthread_mutex_t *)
-		malloc(philo_amount * sizeof(pthread_mutex_t));
-	if (!mutexes->forks)
-		return (quit("mutex init error", vals), (void) 0);
-	mutexes->philos = (pthread_mutex_t *)
-		malloc(philo_amount * sizeof(pthread_mutex_t));
-	if (!mutexes->philos)
-		return (quit("mutex init error", vals), (void) 0);
-	while (++i < philo_amount)
-		if (pthread_mutex_init(&(mutexes->forks[i]), NULL))
-			return (quit("mutex init error", vals));
-	i--;
-	while (++i < 2 * philo_amount)
-		if (pthread_mutex_init(&(mutexes->forks[i - philo_amount]), NULL))
-			return (quit("mutex init error", vals));
-	return ;
-}
-
-void	set_mutexes(t_vals *vals, t_mutexes *mutexes)
-{
-	if (pthread_mutex_init(&mutexes->meal_amount, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	if (pthread_mutex_init(&mutexes->philo_died, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	if (pthread_mutex_init(&mutexes->philos_amount, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	if (pthread_mutex_init(&mutexes->t2die, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	if (pthread_mutex_init(&mutexes->t2eat, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	if (pthread_mutex_init(&mutexes->t2sleep, NULL))
-		return (quit("mutex init error", vals), (void) 0);
-	return ;
-}
-
-void	set_philos(t_vals *vals, t_context ctx)
-{
-	int	i;
+	t_mutexes	mutexes;
+	int			i;
 
 	i = 0;
-	while (i < vals->philos_amount - 1)
+	mutexes = (t_mutexes){0};
+	mutexes.forks = (pthread_mutex_t *)
+		malloc(vals->philos_amount * sizeof(pthread_mutex_t));
+	if (!mutexes.forks)
+		return (quit("mutex init error", vals), (t_mutexes){0});
+	while (i < vals->philos_amount)
+		if (pthread_mutex_init(&(mutexes.forks[i++]), NULL))
+			return (quit("mutex init error", vals), (t_mutexes){0});
+	if (pthread_mutex_init(&mutexes.message, NULL))
+		return (quit("mutex init error", vals), (t_mutexes){0});
+	return (mutexes);
+}
+
+void	start_philos(t_vals *vals, t_grim grim)
+{
+	int	i;
+	int	*id;
+
+	i = 0;
+	while (i < vals->philos_amount)
 	{
-		vals->philos[i] = (t_philo) {0};
-		vals->philos[i].thinks = 1;
-		vals->philos[i].is_alive = 1;
-		vals->philos[i].fork1 = -1;
-		vals->philos[i].fork2 = -1;
-		ctx.vals = vals;
-		ctx.id = i;
-		if (pthread_create(&(vals->philos[i].thread), NULL,
-			&philo_routine, &ctx))
+		id = (int *)malloc(sizeof(int));
+		*id = i;
+		if (pthread_create(&vals->threads[i], NULL, &philo_routine, id))
 			return (quit("Thread creating error", vals));
 		i++;
 	}
+	if (pthread_create(&vals->threads[i], NULL, &grim_reaper_routine, &grim))
+		return (quit("Thread creating error", vals));
 	i = 0;
-	while (i < vals->philos_amount - 1)
+	while (i <= vals->philos_amount)
 	{
-		if (pthread_join(vals->philos[i].thread, NULL))
+		if (pthread_join(vals->threads[i], NULL))
 			return (quit("Thread joining error", vals));
 		i++;
 	}
@@ -113,20 +91,15 @@ void	set_philos(t_vals *vals, t_context ctx)
 
 void	set_vals(int argc, char **argv)
 {
-	t_vals		vals;
-	t_context	ctx;
+	t_vals		*vals;
 
-	vals = (t_vals) {0};
-	if (parse(&vals, argc, argv) == -1)
+	vals = get_vals();
+	if (parse(vals, argc, argv) == -1)
 		quit("Args error!", NULL);
-	vals.philos = (t_philo *) malloc(vals.philos_amount * sizeof(t_philo));
-	if (!vals.philos)
-		quit("Alloc error", &vals);
-	vals.forks_usage = (int *) malloc(vals.philos_amount * sizeof(int));
-	if (!vals.forks_usage)
-		quit("Alloc error", &vals);
-	vals.forks_usage = memset(vals.forks_usage, 1, vals.philos_amount);
-	ctx = (t_context) {0};
-	set_philos(&vals, ctx);
+	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1) * sizeof(pthread_t));
+	if (!*vals->threads)
+		quit("Alloc error", vals);
+	vals->mutexes = set_mutexes(vals);
+	start_philos(vals, set_grim(vals));
 	return ;
 }
