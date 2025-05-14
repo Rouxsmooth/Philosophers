@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   loop.c                                             :+:      :+:    :+:   */
+/*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/04/06 10:49:21 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/11 20:28:04 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
 
-int	mainloop(t_vals *vals)
+void	*philo_routine(void *arg)
 {
-	int	i;
+	t_context	ctx;
+	t_mutexes	mutexes;
+	t_philo		philo;
 
-	i = 0;
-	while (1)
-	{
-		
-	}
+	ctx = *(t_context *)arg;
+	mutexes = ctx.mutexes;
+	pthread_mutex_lock(mutexes.philos);
+	philo = ctx.vals->philos[ctx.id];
 }

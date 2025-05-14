@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/11 20:12:46 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/11 20:24:24 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,15 @@ typedef struct s_vals
 	int				philo_died;
 	int				philos_amount;
 	int				*forks_usage;
-	t_mutexes		mutexes;
 	t_philo			*philos;
 	t_time			time;
 }	t_vals;
 
 typedef struct s_context
 {
-	int		id;
-	t_vals	*vals;
+	int			id;
+	t_mutexes	mutexes;
+	t_vals		*vals;
 }	t_context;
 
 /* ternaries */
