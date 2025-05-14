@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 16:13:10 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 16:39:01 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ typedef struct s_mutexes
 
 typedef struct s_philo
 {
-	int				fork1;
-	int				fork2;
-	int				is_alive;
-	int				thinks;
-	t_time			time;
+	int			fork1;
+	int			fork2;
+	int			is_alive;
+	int			thinks;
+	t_time		time;
 }	t_philo;
 
 typedef struct s_time
@@ -52,14 +52,15 @@ typedef struct s_time
 
 typedef struct s_vals
 {
-	int				t2die;
-	int				t2eat;
-	int				t2sleep;
-	int				philo_died;
-	int				philos_amount;
-	int				message_allowed;
-	pthread_t		*threads;
-	t_mutexes		mutexes;
+	long int	delayed_start;
+	int			t2die;
+	int			t2eat;
+	int			t2sleep;
+	int			philo_died;
+	int			philos_amount;
+	int			message_allowed;
+	pthread_t	*threads;
+	t_mutexes	mutexes;
 }	t_vals;
 
 //typedef struct s_context

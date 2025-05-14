@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 16:09:10 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 17:01:57 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,15 @@ void	start_philos(t_vals *vals, t_grim grim)
 
 void	set_vals(int argc, char **argv)
 {
-	t_vals		*vals;
+	t_vals			*vals;
+	struct timeval	time;
 
 	vals = get_vals();
+	vals->threads = NULL;
+	vals->mutexes = (t_mutexes){0};
+	vals->message_allowed = 0;
+	gettimeofday(&time, NULL);
+	vals->delayed_start = time.tv_usec + 50;
 	if (parse(vals, argc, argv) == -1)
 		quit("Args error!", NULL);
 	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1) * sizeof(pthread_t));

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 14:34:43 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 16:38:25 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ void	quit(char *error_msg, t_vals *vals)
 	if (vals)
 	{
 		clear_mutexes(vals, &vals->mutexes);
-		if (vals->forks_usage)
-			free(vals->forks_usage);
 		if (vals->threads)
 			free(vals->threads);
 	}

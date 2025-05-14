@@ -1,16 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.c                                          :+:      :+:    :+:   */
+/*   philo_routine.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 15:36:24 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 17:02:26 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
+
+void	delayed_start(t_time *time, long int actual_start)
+{
+	while (get_utime(&time) < actual_start)
+		usleep(1);
+}
 
 t_philo	*set_philos(int id)
 {
@@ -47,6 +53,7 @@ void	*philo_routine(void *arg)
 	check_dead_philo(vals, philo);
 	gettimeofday(&philo->time.tv, NULL);
 	philo->time.start_time = philo->time.tv.tv_usec;
+	delayed_start(time, vals->delayed_start);
 	while (philo->is_alive)
 	{
 		set2eating(vals, philo, id);
