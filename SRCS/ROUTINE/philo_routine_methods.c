@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine_methods.c                                  :+:      :+:    :+:   */
+/*   philo_routine_methods.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 15:36:14 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 18:29:42 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	currtime = get_utime(&philo->time.tv);
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
+	vals->id_log[id] = currtime + vals->t2eat;
 	pthread_mutex_unlock(&vals->mutexes.message);
 	usleep(vals->t2eat);
 	pthread_mutex_unlock(&vals->mutexes.forks[fork1]);

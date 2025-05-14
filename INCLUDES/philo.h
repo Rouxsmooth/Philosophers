@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 16:39:01 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/14 18:54:35 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 
 typedef struct s_grim
 {
-	int	message_allowed;
-	int	*id_log;
-	int	hunting_down;
-	int	prey_amount;
+	int			current_prey;
+	int			message_allowed;
+	int			prey_amount;
+	long int	current_prey_starttime;
+	t_time		time;
 }	t_grim;
 
 typedef struct s_mutexes
@@ -52,13 +53,14 @@ typedef struct s_time
 
 typedef struct s_vals
 {
-	long int	delayed_start;
+	int			*id_log;
 	int			t2die;
 	int			t2eat;
 	int			t2sleep;
 	int			philo_died;
 	int			philos_amount;
 	int			message_allowed;
+	long int	delayed_start;
 	pthread_t	*threads;
 	t_mutexes	mutexes;
 }	t_vals;
@@ -83,4 +85,5 @@ void	set_vals(int argc, char **argv);
 t_vals	*get_vals(void);
 long int	get_utime(t_time *time);
 void	grim_reaper_routine(void *arg);
+void	delayed_start(t_time *time, long int actual_start);
 #endif
