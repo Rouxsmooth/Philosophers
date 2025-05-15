@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 19:34:08 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:57:43 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	set2dead(t_vals *vals, t_philo *philo)
 {
+	// printf("a philo died : %d %d\n", vals->message_allowed, vals->message_allowed);
 	pthread_mutex_unlock(&vals->mutexes.message);
 	if (philo->fork1 != -1)
 		pthread_mutex_unlock(&vals->mutexes.forks[philo->fork1]);
@@ -28,7 +29,7 @@ void	set2sleep(t_vals *vals, t_philo *philo, int id)
 	pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	messages(id, get_utime(&philo->time), "sleep");
+	messages(id, get_utime(&philo->time) - vals->delayed_start, "sleep");
 	pthread_mutex_unlock(&vals->mutexes.message);
 	usleep(vals->t2sleep);
 	return ;
@@ -47,12 +48,12 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	messages(id, get_utime(&philo->time), "fork");
+	messages(id, get_utime(&philo->time) - vals->delayed_start, "fork");
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	currtime = get_utime(&philo->time);
+	currtime = get_utime(&philo->time) - vals->delayed_start;
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
 	vals->id_log[id] = currtime + vals->t2eat;

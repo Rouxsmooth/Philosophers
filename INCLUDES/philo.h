@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 19:44:45 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:53:56 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,13 @@ typedef struct s_philo
 
 typedef struct s_vals
 {
-	int			*id_log;
 	int			t2die;
 	int			t2eat;
 	int			t2sleep;
-	int			philo_died;
 	int			philos_amount;
 	int			message_allowed;
 	long int	delayed_start;
+	long int	*id_log;
 	pthread_t	*threads;
 	t_mutexes	mutexes;
 }	t_vals;

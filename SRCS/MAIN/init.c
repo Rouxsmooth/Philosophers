@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 19:47:29 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:57:31 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,26 +88,24 @@ void	set_vals(int argc, char **argv)
 {
 	t_vals			*vals;
 	struct timeval	time;
-	int				i;
 
 	vals = get_vals();
 	vals->threads = NULL;
 	vals->mutexes = (t_mutexes){0};
-	vals->message_allowed = 0;
+	vals->message_allowed = 1;
 	gettimeofday(&time, NULL);
-	vals->delayed_start = time.tv_usec + 50;
+	vals->delayed_start = time.tv_usec / 1000 + 20;
+	// printf("delayed start %ld new delayed start %ld\n", vals->delayed_start, (time.tv_usec / 1000) + 50);
 	if (parse(vals, argc, argv) == -1)
 		quit("Args error!", NULL);
 	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1)
 			* sizeof(pthread_t));
 	if (!vals->threads)
 		quit("Alloc error", vals);
-	vals->id_log = (int *) malloc(vals->philos_amount * sizeof(int));
+	vals->id_log = (long int *) malloc(vals->philos_amount * sizeof(long int));
 	if (!vals->id_log)
 		quit("Alloc error", vals);
-	i = 0;
-	while (i < vals->philos_amount)
-		vals->id_log[i++] = 0;
+	memset(vals->id_log, 0, vals->philos_amount);
 	vals->mutexes = set_mutexes(vals);
 	start_philos(vals, set_grim());
 	return ;

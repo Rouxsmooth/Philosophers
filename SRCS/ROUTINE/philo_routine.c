@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/14 19:33:00 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/15 23:38:18 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,6 @@ t_philo	set_philos(void)
 	return (philo);
 }
 
-void	check_dead_philo(t_vals *vals, t_philo *philo)
-{
-	if (!vals->philo_died)
-		return ;
-	if (philo->fork1 != -1)
-		pthread_mutex_unlock(&vals->mutexes.forks[philo->fork1]);
-	if (philo->fork2 != -1)
-		pthread_mutex_unlock(&vals->mutexes.forks[philo->fork2]);
-	exit(1);
-}
-
 void	*philo_routine(void *arg)
 {
 	int			id;
@@ -51,12 +40,12 @@ void	*philo_routine(void *arg)
 	free(arg);
 	philo = set_philos();
 	vals = get_vals();
-	check_dead_philo(vals, &philo);
 	gettimeofday(&philo.time.tv, NULL);
-	philo.time.start_time = philo.time.tv.tv_usec;
+	philo.time.start_time = philo.time.tv.tv_usec / 1000;
 	delayed_start(&philo.time, vals->delayed_start);
 	while (philo.is_alive)
 	{
+		// printf("philo %d running, message %d\n", id, vals->message_allowed);
 		set2eating(vals, &philo, id);
 		set2sleep(vals, &philo, id);
 	}
