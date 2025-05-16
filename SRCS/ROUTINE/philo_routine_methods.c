@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 00:57:43 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/16 11:17:25 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	set2dead(t_vals *vals, t_philo *philo)
 
 void	set2sleep(t_vals *vals, t_philo *philo, int id)
 {
-	pthread_mutex_lock(&vals->mutexes.message);
+	// pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
 	messages(id, get_utime(&philo->time) - vals->delayed_start, "sleep");
@@ -35,25 +35,41 @@ void	set2sleep(t_vals *vals, t_philo *philo, int id)
 	return ;
 }
 
+int	get_first_fork(t_vals *vals, int id)
+{
+	if (id % 2 == 1)
+		return (id);
+	return ((id + 1) % vals->philos_amount);
+}
+
+int	get_second_fork(t_vals *vals, int id)
+{
+	if (id % 2 == 0)
+		return ((id + 1) % vals->philos_amount);
+	return (id);
+}
+
 void	set2eating(t_vals *vals, t_philo *philo, int id)
 {
 	int			fork1;
 	int			fork2;
 	long int	currtime;
 
-	fork1 = id;
-	fork2 = (id + 1) % vals->philos_amount;
+	fork1 = get_first_fork(vals, id);
+	fork2 = get_second_fork(vals, id);
 	pthread_mutex_lock(&vals->mutexes.forks[fork1]);
 	philo->fork1 = fork1;
-	pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
+	pthread_mutex_lock(&vals->mutexes.message);
 	messages(id, get_utime(&philo->time) - vals->delayed_start, "fork");
+	pthread_mutex_unlock(&vals->mutexes.message);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
 	currtime = get_utime(&philo->time) - vals->delayed_start;
+	pthread_mutex_lock(&vals->mutexes.message);
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
 	vals->id_log[id] = currtime + vals->t2eat;

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 00:53:56 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/16 11:21:59 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void		set_vals(int argc, char **argv);
 t_vals		*get_vals(void);
 long int	get_utime(t_time *time);
 void		*grim_reaper_routine(void *arg);
-void		delayed_start(t_time *time, long int actual_start);
+void		delayed_start(t_time *time, long int actual_start, int id);
 void		set2sleep(t_vals *vals, t_philo *philo, int id);
 void		set2eating(t_vals *vals, t_philo *philo, int id);
 #endif
