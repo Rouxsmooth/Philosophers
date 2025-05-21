@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:01:27 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:13:20 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ t_grim	set_grim(void)
 {
 	t_grim	grim;
 
+	grim.prey_amount = get_vals()->philos_amount;
 	grim.current_prey = 1;
 	grim.message_allowed = 0;
 	grim.current_prey_starttime = -1;
