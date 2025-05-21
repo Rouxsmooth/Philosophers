@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:13:20 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:44:23 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,6 @@ t_grim	set_grim(void)
 	grim.message_allowed = 0;
 	grim.current_prey_starttime = -1;
 	return (grim);
-}
-
-void	clear_mutexes(t_vals *vals, t_mutexes *mutexes)
-{
-	int	i;
-
-	if (mutexes->forks)
-	{
-		i = 0;
-		while (i < vals->philos_amount)
-			pthread_mutex_destroy(&mutexes->forks[i++]);
-		free(mutexes->forks);
-		mutexes->forks = NULL;
-	}
-	pthread_mutex_destroy(&mutexes->message);
-	return ;
 }
 
 t_mutexes	set_mutexes(t_vals *vals)
@@ -64,6 +48,7 @@ void	start_philos(t_vals *vals, t_grim grim)
 	int	*id;
 
 	i = 0;
+	printf("%d\n", vals->philos_amount);
 	while (i < vals->philos_amount)
 	{
 		id = (int *)malloc(sizeof(int));
@@ -84,29 +69,41 @@ void	start_philos(t_vals *vals, t_grim grim)
 	return ;
 }
 
-void	set_vals(int argc, char **argv)
+void	set_logs(t_vals *vals)
 {
-	t_vals	*vals;
-	int		i;
+	int	i;
 
-	vals = get_vals();
-	vals->threads = NULL;
-	vals->mutexes = (t_mutexes){0};
-	vals->message_allowed = 1;
-	vals->delayed_start = get_utime() + 500;
-	// printf("delayed start %ld new delayed start %ld\n", vals->delayed_start, (time.tv_usec / 1000) + 50);
-	if (parse(vals, argc, argv) == -1)
-		quit("Args error!", NULL);
-	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1)
-			* sizeof(pthread_t));
-	if (!vals->threads)
-		quit("Alloc error", vals);
 	vals->id_log = (long int *) malloc(vals->philos_amount * sizeof(long int));
 	if (!vals->id_log)
 		quit("Alloc error", vals);
 	i = 0;
 	while (i < vals->philos_amount)
 		vals->id_log[i++] = vals->delayed_start;
+	vals->meal_log = (int *) malloc(vals->philos_amount * sizeof(int));
+	if (!vals->meal_log)
+		quit("Alloc error", vals);
+	i = 0;
+	while (i < vals->philos_amount)
+		vals->meal_log[i++] = vals->meal_amount;
+	return ;
+}
+
+void	set_vals(int argc, char **argv)
+{
+	t_vals	*vals;
+
+	vals = get_vals();
+	vals->threads = NULL;
+	vals->mutexes = (t_mutexes){0};
+	vals->message_allowed = 1;
+	vals->delayed_start = get_utime() + 500;
+	if (parse(vals, argc, argv) == -1)
+		quit("Args error!", NULL);
+	vals->threads = (pthread_t *) malloc((vals->philos_amount + 1)
+			* sizeof(pthread_t));
+	if (!vals->threads)
+		quit("Alloc error", vals);
+	set_logs(vals);
 	vals->mutexes = set_mutexes(vals);
 	start_philos(vals, set_grim());
 	return ;

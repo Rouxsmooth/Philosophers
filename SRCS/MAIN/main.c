@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 16:10:58 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:44:33 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,6 @@ t_vals	*get_vals(void)
 	static t_vals	vals = (t_vals){0};
 
 	return (&vals);
-}
-
-void	quit(char *error_msg, t_vals *vals)
-{
-	if (vals)
-	{
-		clear_mutexes(vals, &vals->mutexes);
-		if (vals->threads)
-			free(vals->threads);
-	}
-	if (error_msg)
-		display_error(error_msg);
-	exit(0);
 }
 
 int	main(int argc, char **argv)
@@ -46,6 +33,7 @@ int	main(int argc, char **argv)
 long int	get_utime(void)
 {
 	struct timeval	tv;
+
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000L + tv.tv_usec / 1000L);
 }

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:10:08 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:13:44 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:45:25 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	find_new_prey(t_grim *grim, t_vals *vals)
 	prey = 0;
 	while (i < grim->prey_amount)
 	{
-		if (vals->id_log[i] < prey)
+		if (vals->id_log[i] < prey && vals->meal_log[prey] > 0)
 			prey = vals->id_log[i];
 		i++;
 	}
@@ -33,11 +33,7 @@ void	find_new_prey(t_grim *grim, t_vals *vals)
 void	kill_all_preys(t_grim *grim, t_vals *vals)
 {
 	long int	time;
-	
-	printf("Killing all preys\n");
-	//printf("%ld\n", vals->id_log[grim->current_prey]);
-	//printf("%ld time %ld\n", vals->id_log[grim->current_prey] + vals->t2die, time);
-	printf("%ld - %ld : %ld > %d\n", get_utime(), vals->id_log[grim->current_prey], get_utime() - vals->id_log[grim->current_prey], vals->t2die);
+
 	pthread_mutex_lock(&vals->mutexes.message);
 	vals->message_allowed = 0;
 	time = get_utime();
@@ -45,6 +41,9 @@ void	kill_all_preys(t_grim *grim, t_vals *vals)
 	pthread_mutex_unlock(&vals->mutexes.message);
 	exit(1);
 }
+//printf("%ld - %ld : %ld > %d\n", get_utime(),
+//vals->id_log[grim->current_prey],
+//get_utime() - vals->id_log[grim->current_prey], vals->t2die);
 
 void	*grim_reaper_routine(void *arg)
 {
@@ -59,8 +58,8 @@ void	*grim_reaper_routine(void *arg)
 	grim->current_prey_starttime = vals->id_log[0];
 	while (1)
 	{
-		//printf("time : %ld\n", currtime);
-		if (get_utime() - vals->id_log[grim->current_prey] > vals->t2die)
+		if (get_utime() - vals->id_log[grim->current_prey] > vals->t2die
+			&& vals->meal_log[grim->current_prey] > 0)
 			kill_all_preys(grim, vals);
 		if (grim->current_prey_starttime != vals->id_log[grim->current_prey])
 			find_new_prey(grim, vals);

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 16:26:03 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:40:29 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ void	*philo_routine(void *arg)
 	delayed_start(vals->delayed_start, id);
 	while (philo.is_alive)
 	{
-		// printf("philo %d running, message %d\n", id, vals->message_allowed);
+		if (!vals->meal_log[id])
+			exit(1);
 		set2eating(vals, &philo, id);
 		set2sleep(vals, &philo, id);
 	}

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:07:17 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:34:05 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,15 @@ void	set2dead(t_vals *vals, t_philo *philo)
 
 void	set2sleep(t_vals *vals, t_philo *philo, int id)
 {
-	// pthread_mutex_lock(&vals->mutexes.message);
+	pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
 	messages(id, get_utime() - philo->start_time, "sleep");
 	pthread_mutex_unlock(&vals->mutexes.message);
 	usleep(vals->t2sleep);
+	pthread_mutex_lock(&vals->mutexes.message);
+	messages(id, get_utime() - philo->start_time, "think");
+	pthread_mutex_unlock(&vals->mutexes.message);
 	return ;
 }
 
@@ -64,7 +67,7 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	//printf("philo %d tried taking messages\n", id + 1);
 	pthread_mutex_lock(&vals->mutexes.message);
 	//printf("philo %d succeded taking messages\n", id + 1);
-	//messages(id, get_utime() - philo->start_time, "fork");
+	messages(id, get_utime() - philo->start_time, "fork");
 	pthread_mutex_unlock(&vals->mutexes.message);
 	//printf("philo %d succeded releasing messages\n", id + 1);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
@@ -78,6 +81,7 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
 	vals->id_log[id] = currtime + philo->start_time + vals->t2eat;
+	vals->meal_log[id]--;
 	pthread_mutex_unlock(&vals->mutexes.message);
 	//printf("philo %d succeded releasing messages\n", id + 1);
 	//printf("t2eat : %d\n", vals->t2eat);
