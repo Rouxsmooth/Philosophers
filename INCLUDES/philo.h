@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:33:42 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 01:48:33 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ typedef struct s_philo
 {
 	int			fork1;
 	int			fork2;
-	int			is_alive;
 	int			thinks;
+	int			uses_message;
 	long int	start_time;
 }	t_philo;
 
@@ -70,6 +70,6 @@ t_vals		*get_vals(void);
 long int	get_utime(void);
 void		*grim_reaper_routine(void *arg);
 void		delayed_start(long int actual_start, int id);
-void		set2sleep(t_vals *vals, t_philo *philo, int id);
-void		set2eating(t_vals *vals, t_philo *philo, int id);
+int			set2sleep(t_vals *vals, t_philo *philo, int id);
+int			set2eating(t_vals *vals, t_philo *philo, int id);
 #endif

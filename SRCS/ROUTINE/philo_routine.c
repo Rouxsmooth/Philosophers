@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:40:29 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 01:48:49 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ t_philo	set_philos(void)
 
 	philo = (t_philo){0};
 	philo.thinks = 1;
-	philo.is_alive = 1;
 	philo.fork1 = -1;
 	philo.fork2 = -1;
+	philo.uses_message = 0;
 	return (philo);
 }
 
@@ -44,12 +44,14 @@ void	*philo_routine(void *arg)
 	vals = get_vals();
 	philo.start_time = vals->delayed_start;
 	delayed_start(vals->delayed_start, id);
-	while (philo.is_alive)
+	while (1)
 	{
 		if (!vals->meal_log[id])
 			exit(1);
-		set2eating(vals, &philo, id);
-		set2sleep(vals, &philo, id);
+		if (set2eating(vals, &philo, id) == -1)
+			break ;
+		if (set2sleep(vals, &philo, id) == -1)
+			break ;
 	}
 	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:10:08 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 18:29:17 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 01:52:38 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	kill_all_preys(t_grim *grim, t_vals *vals)
 	time = get_utime();
 	messages(grim->current_prey, time - grim->start_time, "die");
 	pthread_mutex_unlock(&vals->mutexes.message);
-	exit(1);
+	return ;
 }
 //printf("%ld - %ld : %ld > %d\n", get_utime(),
 //	vals->id_log[grim->current_prey],
@@ -55,12 +55,14 @@ void	*grim_reaper_routine(void *arg)
 	grim->start_time = vals->delayed_start;
 	delayed_start(grim->start_time, 1);
 	grim->current_prey = 0;
+	pthread_mutex_lock(&vals->mutexes.message);
 	grim->current_prey_starttime = vals->id_log[0];
+	pthread_mutex_unlock(&vals->mutexes.message);
 	while (1)
 	{
 		if (get_utime() - vals->id_log[grim->current_prey] > vals->t2die
 			&& vals->meal_log[grim->current_prey] > 0)
-			kill_all_preys(grim, vals);
+			return (kill_all_preys(grim, vals), NULL);
 		if (grim->current_prey_starttime != vals->id_log[grim->current_prey])
 			find_new_prey(grim, vals);
 	}
