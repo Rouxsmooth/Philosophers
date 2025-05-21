@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 11:17:25 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:04:20 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	set2sleep(t_vals *vals, t_philo *philo, int id)
 	// pthread_mutex_lock(&vals->mutexes.message);
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	messages(id, get_utime(&philo->time) - vals->delayed_start, "sleep");
+	messages(id, get_utime() - philo->start_time, "sleep");
 	pthread_mutex_unlock(&vals->mutexes.message);
 	usleep(vals->t2sleep);
 	return ;
@@ -45,8 +45,8 @@ int	get_first_fork(t_vals *vals, int id)
 int	get_second_fork(t_vals *vals, int id)
 {
 	if (id % 2 == 0)
-		return ((id + 1) % vals->philos_amount);
-	return (id);
+		return (id);
+	return ((id + 1) % vals->philos_amount);
 }
 
 void	set2eating(t_vals *vals, t_philo *philo, int id)
@@ -61,20 +61,28 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	philo->fork1 = fork1;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
+	printf("philo %d tried taking messages\n", id + 1);
 	pthread_mutex_lock(&vals->mutexes.message);
-	messages(id, get_utime(&philo->time) - vals->delayed_start, "fork");
+	printf("philo %d succeded taking messages\n", id + 1);
+	messages(id, get_utime() - philo->start_time, "fork");
 	pthread_mutex_unlock(&vals->mutexes.message);
+	printf("philo %d succeded releasing messages\n", id + 1);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo));
-	currtime = get_utime(&philo->time) - vals->delayed_start;
+	currtime = get_utime() - philo->start_time;
+	printf("philo %d tried taking messages\n", id + 1);
 	pthread_mutex_lock(&vals->mutexes.message);
+	printf("philo %d succeded taking messages\n", id + 1);
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
-	vals->id_log[id] = currtime + vals->t2eat;
+	vals->id_log[id] = currtime + philo->start_time + vals->t2eat;
 	pthread_mutex_unlock(&vals->mutexes.message);
+	printf("philo %d succeded releasing messages\n", id + 1);
+	printf("t2eat : %d\n", vals->t2eat);
 	usleep(vals->t2eat);
+	printf("seg after\n");
 	pthread_mutex_unlock(&vals->mutexes.forks[fork1]);
 	pthread_mutex_unlock(&vals->mutexes.forks[fork2]);
 }

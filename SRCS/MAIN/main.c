@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/15 23:36:46 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 16:10:58 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-long int	get_utime(t_time *time)
+long int	get_utime(void)
 {
-	gettimeofday(&time->tv, NULL);
-	time->curr_time = time->tv.tv_usec / 1000;
-	return (time->curr_time - time->start_time);
+	struct timeval	tv;
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000L + tv.tv_usec / 1000L);
 }

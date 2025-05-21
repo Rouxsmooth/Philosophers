@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 11:21:59 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 16:17:41 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,13 @@
 # include <unistd.h>
 # include <sys/time.h>
 
-typedef struct s_time
-{
-	struct timeval	tv;
-	long int		start_time;
-	long int		curr_time;
-}	t_time;
-
 typedef struct s_grim
 {
 	int			current_prey;
 	int			message_allowed;
 	int			prey_amount;
 	long int	current_prey_starttime;
-	t_time		time;
+	long int	start_time;
 }	t_grim;
 
 typedef struct s_mutexes
@@ -48,7 +41,7 @@ typedef struct s_philo
 	int			fork2;
 	int			is_alive;
 	int			thinks;
-	t_time		time;
+	long int	start_time;
 }	t_philo;
 
 typedef struct s_vals
@@ -72,9 +65,9 @@ void		quit(char *error_msg, t_vals *vals);
 void		clear_mutexes(t_vals *vals, t_mutexes *mutexes);
 void		set_vals(int argc, char **argv);
 t_vals		*get_vals(void);
-long int	get_utime(t_time *time);
+long int	get_utime(void);
 void		*grim_reaper_routine(void *arg);
-void		delayed_start(t_time *time, long int actual_start, int id);
+void		delayed_start(long int actual_start, int id);
 void		set2sleep(t_vals *vals, t_philo *philo, int id);
 void		set2eating(t_vals *vals, t_philo *philo, int id);
 #endif

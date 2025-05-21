@@ -6,15 +6,15 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 11:23:11 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 16:26:03 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
 
-void	delayed_start(t_time *time, long int actual_start, int id)
+void	delayed_start(long int actual_start, int id)
 {
-	while (get_utime(time) < actual_start)
+	while (get_utime() < actual_start)
 		usleep(1);
 	if (id % 2 == 0)
 		usleep(1000);
@@ -42,9 +42,8 @@ void	*philo_routine(void *arg)
 	free(arg);
 	philo = set_philos();
 	vals = get_vals();
-	gettimeofday(&philo.time.tv, NULL);
-	philo.time.start_time = philo.time.tv.tv_usec / 1000;
-	delayed_start(&philo.time, vals->delayed_start, id);
+	philo.start_time = vals->delayed_start;
+	delayed_start(vals->delayed_start, id);
 	while (philo.is_alive)
 	{
 		// printf("philo %d running, message %d\n", id, vals->message_allowed);

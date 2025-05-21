@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 00:57:31 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:01:27 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ t_grim	set_grim(void)
 
 	grim.current_prey = 1;
 	grim.message_allowed = 0;
-	grim.time = (t_time){0};
 	grim.current_prey_starttime = -1;
 	return (grim);
 }
@@ -86,15 +85,14 @@ void	start_philos(t_vals *vals, t_grim grim)
 
 void	set_vals(int argc, char **argv)
 {
-	t_vals			*vals;
-	struct timeval	time;
+	t_vals	*vals;
+	int		i;
 
 	vals = get_vals();
 	vals->threads = NULL;
 	vals->mutexes = (t_mutexes){0};
 	vals->message_allowed = 1;
-	gettimeofday(&time, NULL);
-	vals->delayed_start = time.tv_usec / 1000 + 20;
+	vals->delayed_start = get_utime() + 500;
 	// printf("delayed start %ld new delayed start %ld\n", vals->delayed_start, (time.tv_usec / 1000) + 50);
 	if (parse(vals, argc, argv) == -1)
 		quit("Args error!", NULL);
@@ -105,7 +103,9 @@ void	set_vals(int argc, char **argv)
 	vals->id_log = (long int *) malloc(vals->philos_amount * sizeof(long int));
 	if (!vals->id_log)
 		quit("Alloc error", vals);
-	memset(vals->id_log, 0, vals->philos_amount);
+	i = 0;
+	while (i < vals->philos_amount)
+		vals->id_log[i++] = vals->delayed_start;
 	vals->mutexes = set_mutexes(vals);
 	start_philos(vals, set_grim());
 	return ;

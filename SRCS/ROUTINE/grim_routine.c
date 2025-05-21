@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:10:08 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/16 11:31:41 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 17:02:21 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,18 @@ void	find_new_prey(t_grim *grim, t_vals *vals)
 	return ;
 }
 
-void	kill_all_preys(t_grim *grim, t_vals *vals, long int time)
+void	kill_all_preys(t_grim *grim, t_vals *vals)
 {
-	pthread_mutex_lock(&vals->mutexes.message);
-	printf("%ld\n", vals->id_log[grim->current_prey]);
-	printf("%ld time %ld\n", vals->id_log[grim->current_prey] + vals->t2die / 1000, time);
+	long int	time;
+	
 	printf("Killing all preys\n");
+	//printf("%ld\n", vals->id_log[grim->current_prey]);
+	//printf("%ld time %ld\n", vals->id_log[grim->current_prey] + vals->t2die, time);
+	printf("%ld - %ld : %ld > %d\n", get_utime(), vals->id_log[grim->current_prey], get_utime() - vals->id_log[grim->current_prey], vals->t2die);
+	pthread_mutex_lock(&vals->mutexes.message);
 	vals->message_allowed = 0;
-	messages(grim->current_prey, time, "die");
+	time = get_utime();
+	messages(grim->current_prey, time - grim->start_time, "die");
 	pthread_mutex_unlock(&vals->mutexes.message);
 	exit(1);
 }
@@ -46,22 +50,20 @@ void	*grim_reaper_routine(void *arg)
 {
 	t_grim		*grim;
 	t_vals		*vals;
-	long int	currtime;
 
 	grim = (t_grim *) arg;
 	vals = get_vals();
-	gettimeofday(&grim->time.tv, NULL);
-	grim->time.start_time = grim->time.tv.tv_usec / 1000;
-	delayed_start(&grim->time, vals->delayed_start, 1);
-	find_new_prey(grim, vals);
+	grim->start_time = vals->delayed_start;
+	delayed_start(grim->start_time, 1);
+	grim->current_prey = 0;
+	grim->current_prey_starttime = vals->id_log[0];
 	while (1)
 	{
-		currtime = get_utime(&grim->time)- vals->delayed_start;
-		printf("time : %ld\n", currtime);
-		if (vals->id_log[grim->current_prey] + vals->t2die / 1000 < currtime)
-			return (kill_all_preys(grim, vals, currtime), NULL);
+		//printf("time : %ld\n", currtime);
+		if (get_utime() - vals->id_log[grim->current_prey] > vals->t2die)
+			kill_all_preys(grim, vals);
 		if (grim->current_prey_starttime != vals->id_log[grim->current_prey])
-			find_new_prey(grim, vals);
+			{printf("newprey\n"); find_new_prey(grim, vals);}
 	}
 	return (NULL);
 }
