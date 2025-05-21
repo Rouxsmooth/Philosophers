@@ -1,10 +1,10 @@
 NAME = philo
 CFLAGS = -Wall -Werror -Wextra -g -pthread
 
-MAINFILES     = init main
-ROUTINEFILES  = grim_routine philo_routine philo_routine_methods
-PARSERFILES   = parser
-UTILSFILES    = printmessages
+MAINFILES		=	init			main			quit
+ROUTINEFILES	=	grim_routine	philo_routine	philo_routine_methods
+PARSERFILES		=	parser
+UTILSFILES		=	printmessages
 
 MAINFILES_FULL     = $(addprefix SRCS/MAIN/, $(addsuffix .c, $(MAINFILES)))
 ROUTINEFILES_FULL  = $(addprefix SRCS/ROUTINE/, $(addsuffix .c, $(ROUTINEFILES)))
