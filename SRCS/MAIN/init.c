@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:46:11 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 18:02:34 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ void	start_philos(t_vals *vals, t_grim grim)
 	int	*id;
 
 	i = 0;
-	printf("%d\n", vals->philos_amount);
 	while (i < vals->philos_amount)
 	{
 		id = (int *)malloc(sizeof(int));
@@ -83,8 +82,12 @@ void	set_logs(t_vals *vals)
 	if (!vals->meal_log)
 		quit("Alloc error", vals);
 	i = 0;
-	while (i < vals->philos_amount)
-		vals->meal_log[i++] = vals->meal_amount;
+	if (vals->meal_amount == -1)
+		while (i < vals->philos_amount)
+			vals->meal_log[i++] = 1;
+	else
+		while (i < vals->philos_amount)
+			vals->meal_log[i++] = vals->meal_amount;
 	return ;
 }
 

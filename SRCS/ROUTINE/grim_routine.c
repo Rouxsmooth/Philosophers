@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:10:08 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:45:25 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 18:29:17 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void	kill_all_preys(t_grim *grim, t_vals *vals)
 	exit(1);
 }
 //printf("%ld - %ld : %ld > %d\n", get_utime(),
-//vals->id_log[grim->current_prey],
-//get_utime() - vals->id_log[grim->current_prey], vals->t2die);
+//	vals->id_log[grim->current_prey],
+//	get_utime() - vals->id_log[grim->current_prey], vals->t2die);
 
 void	*grim_reaper_routine(void *arg)
 {

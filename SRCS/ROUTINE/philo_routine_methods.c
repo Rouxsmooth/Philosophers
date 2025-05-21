@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:34:05 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/21 18:28:22 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	set2sleep(t_vals *vals, t_philo *philo, int id)
 		return (set2dead(vals, philo));
 	messages(id, get_utime() - philo->start_time, "sleep");
 	pthread_mutex_unlock(&vals->mutexes.message);
-	usleep(vals->t2sleep);
+	usleep(vals->t2sleep * 1000);
 	pthread_mutex_lock(&vals->mutexes.message);
 	messages(id, get_utime() - philo->start_time, "think");
 	pthread_mutex_unlock(&vals->mutexes.message);
@@ -80,12 +80,13 @@ void	set2eating(t_vals *vals, t_philo *philo, int id)
 	//printf("philo %d succeded taking messages\n", id + 1);
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
-	vals->id_log[id] = currtime + philo->start_time + vals->t2eat;
-	vals->meal_log[id]--;
+	vals->id_log[id] = currtime + philo->start_time + vals->t2eat / 1000;
+	if (vals->meal_amount != -1)
+		vals->meal_log[id]--;
 	pthread_mutex_unlock(&vals->mutexes.message);
 	//printf("philo %d succeded releasing messages\n", id + 1);
 	//printf("t2eat : %d\n", vals->t2eat);
-	usleep(vals->t2eat);
+	usleep(vals->t2eat * 1000);
 	//printf("seg after\n");
 	pthread_mutex_unlock(&vals->mutexes.forks[fork1]);
 	pthread_mutex_unlock(&vals->mutexes.forks[fork2]);
