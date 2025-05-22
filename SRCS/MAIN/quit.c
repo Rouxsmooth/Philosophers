@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 17:45:04 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:45:05 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:51:34 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ void	clear_mutexes(t_vals *vals, t_mutexes *mutexes)
 		free(mutexes->forks);
 		mutexes->forks = NULL;
 	}
+	pthread_mutex_destroy(&mutexes->id_log);
 	pthread_mutex_destroy(&mutexes->message);
+	pthread_mutex_destroy(&mutexes->meal_log);
 	return ;
 }
 

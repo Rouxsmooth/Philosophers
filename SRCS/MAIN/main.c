@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:33:55 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 17:44:33 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:50:42 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int	main(int argc, char **argv)
 	if (argc > 6)
 		return (display_error("Too much args!"));
 	set_vals(argc, argv);
-	quit(NULL, NULL);
 	return (0);
 }
 

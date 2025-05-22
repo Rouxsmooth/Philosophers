@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:38:35 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 18:27:45 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:27:01 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	set_args(t_vals *vals, int argc, char **argv)
 	if (vals->philos_amount == -1 || vals->t2die == -1
 		|| vals->t2eat == -1 || vals->t2sleep == -1
 		|| vals->t2die < 60 || vals->t2eat < 60
-		|| vals->t2sleep < 60 || vals->philos_amount >= 200)
+		|| vals->t2sleep < 60 || vals->philos_amount > 200)
 		return (-1);
 	if (argc == 6)
 	{

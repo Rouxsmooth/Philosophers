@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 01:50:29 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:36:34 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	set2sleep(t_vals *vals, t_philo *philo, int id)
 	messages(id, get_utime() - philo->start_time, "sleep");
 	philo->uses_message = 0;
 	pthread_mutex_unlock(&vals->mutexes.message);
-	usleep(vals->t2sleep * 1000);
+	usleep(philo->t2sleep * 1000);
 	pthread_mutex_lock(&vals->mutexes.message);
 	philo->uses_message = 1;
 	if (!vals->message_allowed)
@@ -50,28 +50,14 @@ int	set2sleep(t_vals *vals, t_philo *philo, int id)
 	return (1);
 }
 
-int	get_first_fork(t_vals *vals, int id)
-{
-	if (id % 2 == 1)
-		return (id);
-	return ((id + 1) % vals->philos_amount);
-}
-
-int	get_second_fork(t_vals *vals, int id)
-{
-	if (id % 2 == 0)
-		return (id);
-	return ((id + 1) % vals->philos_amount);
-}
-
 int	set2eating(t_vals *vals, t_philo *philo, int id)
 {
 	int			fork1;
 	int			fork2;
 	long int	currtime;
 
-	fork1 = get_first_fork(vals, id);
-	fork2 = get_second_fork(vals, id);
+	fork1 = get_first_fork(philo, id);
+	fork2 = get_second_fork(philo, id);
 	pthread_mutex_lock(&vals->mutexes.forks[fork1]);
 	philo->fork1 = fork1;
 	pthread_mutex_lock(&vals->mutexes.message);
@@ -83,19 +69,23 @@ int	set2eating(t_vals *vals, t_philo *philo, int id)
 	pthread_mutex_unlock(&vals->mutexes.message);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
-	currtime = get_utime() - philo->start_time;
 	pthread_mutex_lock(&vals->mutexes.message);
 	philo->uses_message = 1;
 	if (!vals->message_allowed)
 		return (set2dead(vals, philo), -1);
+	currtime = get_utime() - philo->start_time;
 	messages(id, currtime, "fork");
 	messages(id, currtime, "eat");
-	vals->id_log[id] = currtime + philo->start_time + vals->t2eat / 1000;
+	pthread_mutex_lock(&vals->mutexes.id_log);
+	vals->id_log[id] = currtime + philo->start_time + philo->t2eat / 1000;
+	pthread_mutex_unlock(&vals->mutexes.id_log);
+	pthread_mutex_lock(&vals->mutexes.meal_log);
 	if (vals->meal_amount != -1)
 		vals->meal_log[id]--;
+	pthread_mutex_unlock(&vals->mutexes.meal_log);
 	philo->uses_message = 0;
 	pthread_mutex_unlock(&vals->mutexes.message);
-	usleep(vals->t2eat * 1000);
+	usleep(philo->t2eat * 1000);
 	unlock_forks(vals, philo);
 	return (1);
 }

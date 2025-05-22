@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/21 18:02:34 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:50:37 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ t_mutexes	set_mutexes(t_vals *vals)
 		if (pthread_mutex_init(&(mutexes.forks[i++]), NULL))
 			return (quit("mutex init error", vals), (t_mutexes){0});
 	if (pthread_mutex_init(&mutexes.message, NULL))
+		return (quit("mutex init error", vals), (t_mutexes){0});
+	if (pthread_mutex_init(&mutexes.meal_log, NULL))
+		return (quit("mutex init error", vals), (t_mutexes){0});
+	if (pthread_mutex_init(&mutexes.id_log, NULL))
 		return (quit("mutex init error", vals), (t_mutexes){0});
 	return (mutexes);
 }
@@ -109,5 +113,6 @@ void	set_vals(int argc, char **argv)
 	set_logs(vals);
 	vals->mutexes = set_mutexes(vals);
 	start_philos(vals, set_grim());
+	quit(NULL, vals);
 	return ;
 }

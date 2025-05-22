@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 01:48:33 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:37:11 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ typedef struct s_grim
 typedef struct s_mutexes
 {
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	id_log;
+	pthread_mutex_t	meal_log;
 	pthread_mutex_t	message;
 }	t_mutexes;
 
@@ -39,6 +41,10 @@ typedef struct s_philo
 {
 	int			fork1;
 	int			fork2;
+	int			philos_amount;
+	int			t2die;
+	int			t2eat;
+	int			t2sleep;
 	int			thinks;
 	int			uses_message;
 	long int	start_time;
@@ -72,4 +78,6 @@ void		*grim_reaper_routine(void *arg);
 void		delayed_start(long int actual_start, int id);
 int			set2sleep(t_vals *vals, t_philo *philo, int id);
 int			set2eating(t_vals *vals, t_philo *philo, int id);
+int			get_second_fork(t_philo *philo, int id);
+int			get_first_fork(t_philo *philo, int id);
 #endif
