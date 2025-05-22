@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:47:48 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 16:50:37 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 17:14:47 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ t_grim	set_grim(void)
 	grim.current_prey = 1;
 	grim.message_allowed = 0;
 	grim.current_prey_starttime = -1;
+	grim.uses_id_log = 0;
 	return (grim);
 }
 

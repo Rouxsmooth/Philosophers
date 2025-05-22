@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 16:36:34 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:29:46 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,23 +50,12 @@ int	set2sleep(t_vals *vals, t_philo *philo, int id)
 	return (1);
 }
 
-int	set2eating(t_vals *vals, t_philo *philo, int id)
+int	eating_with_2forks(t_vals *vals, t_philo *philo, int id)
 {
-	int			fork1;
-	int			fork2;
 	long int	currtime;
+	int			fork2;
 
-	fork1 = get_first_fork(philo, id);
 	fork2 = get_second_fork(philo, id);
-	pthread_mutex_lock(&vals->mutexes.forks[fork1]);
-	philo->fork1 = fork1;
-	pthread_mutex_lock(&vals->mutexes.message);
-	philo->uses_message = 1;
-	if (!vals->message_allowed)
-		return (set2dead(vals, philo), -1);
-	messages(id, get_utime() - philo->start_time, "fork");
-	philo->uses_message = 0;
-	pthread_mutex_unlock(&vals->mutexes.message);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	pthread_mutex_lock(&vals->mutexes.message);
@@ -86,6 +75,22 @@ int	set2eating(t_vals *vals, t_philo *philo, int id)
 	philo->uses_message = 0;
 	pthread_mutex_unlock(&vals->mutexes.message);
 	usleep(philo->t2eat * 1000);
-	unlock_forks(vals, philo);
-	return (1);
+	return (unlock_forks(vals, philo), 1);
+}
+
+int	set2eating(t_vals *vals, t_philo *philo, int id)
+{
+	int			fork1;
+
+	fork1 = get_first_fork(philo, id);
+	pthread_mutex_lock(&vals->mutexes.forks[fork1]);
+	philo->fork1 = fork1;
+	pthread_mutex_lock(&vals->mutexes.message);
+	philo->uses_message = 1;
+	if (!vals->message_allowed)
+		return (set2dead(vals, philo), -1);
+	messages(id, get_utime() - philo->start_time, "fork");
+	philo->uses_message = 0;
+	pthread_mutex_unlock(&vals->mutexes.message);
+	return (eating_with_2forks(vals, philo, id));
 }

@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 16:37:11 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:30:52 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_grim
 	int			current_prey;
 	int			message_allowed;
 	int			prey_amount;
+	int			uses_id_log;
 	long int	current_prey_starttime;
 	long int	start_time;
 }	t_grim;
@@ -64,6 +65,8 @@ typedef struct s_vals
 	pthread_t	*threads;
 	t_mutexes	mutexes;
 }	t_vals;
+
+# define LONG_MAX 9223372036854775807
 
 int			display_error(char *output);
 int			parse(t_vals *vals, int argc, char **argv);

@@ -6,34 +6,39 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:10:08 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 16:43:06 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:31:11 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
 
-void	find_new_prey(t_grim *grim, t_vals *vals)
+int	find_new_prey(t_grim *grim, t_vals *vals)
 {
-	int	i;
-	int	prey;
+	int			i;
+	long int	prey;
 
 	i = 0;
-	prey = 0;
+	prey = LONG_MAX;
 	while (i < grim->prey_amount)
 	{
-		if (vals->id_log[i] < prey && vals->meal_log[prey] > 0)
-			prey = vals->id_log[i];
+		pthread_mutex_lock(&vals->mutexes.meal_log);
+		if (vals->id_log[i] < prey && vals->meal_log[i] > 0)
+			prey = i;
+		pthread_mutex_unlock(&vals->mutexes.meal_log);
 		i++;
 	}
+	if (prey == LONG_MAX)
+		return (-1);
 	grim->current_prey_starttime = vals->id_log[prey];
 	grim->current_prey = prey;
-	return ;
+	return (1);
 }
 
 void	kill_all_preys(t_grim *grim, t_vals *vals)
 {
 	long int	time;
 
+	pthread_mutex_unlock(&vals->mutexes.meal_log);
 	pthread_mutex_lock(&vals->mutexes.message);
 	vals->message_allowed = 0;
 	time = get_utime();
@@ -47,17 +52,26 @@ void	grim_loop(t_grim *grim, t_vals *vals)
 	while (1)
 	{
 		pthread_mutex_lock(&vals->mutexes.id_log);
+		grim->uses_id_log = 1;
 		if (get_utime() - vals->id_log[grim->current_prey] > vals->t2die)
 		{
 			pthread_mutex_unlock(&vals->mutexes.id_log);
+			grim->uses_id_log = 0;
 			pthread_mutex_lock(&vals->mutexes.meal_log);
 			if (vals->meal_log[grim->current_prey] > 0)
-				return (pthread_mutex_unlock(&vals->mutexes.meal_log),
-					kill_all_preys(grim, vals));
+				return (kill_all_preys(grim, vals));
+		}
+		if (!grim->uses_id_log)
+		{
+			pthread_mutex_lock(&vals->mutexes.id_log);
+			grim->uses_id_log = 1;
 		}
 		if (grim->current_prey_starttime != vals->id_log[grim->current_prey])
-			find_new_prey(grim, vals);
-		pthread_mutex_unlock(&vals->mutexes.id_log);
+			if (find_new_prey(grim, vals) == -1)
+				return (pthread_mutex_unlock(&vals->mutexes.id_log), (void) 0);
+		if (grim->uses_id_log)
+			pthread_mutex_unlock(&vals->mutexes.id_log);
+		usleep(1);
 	}
 	return ;
 }

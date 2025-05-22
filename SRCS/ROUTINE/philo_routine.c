@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 16:50:05 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/05/22 18:29:36 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,10 @@ void	*philo_routine(void *arg)
 	delayed_start(vals->delayed_start, id);
 	while (1)
 	{
+		pthread_mutex_lock(&vals->mutexes.meal_log);
 		if (!vals->meal_log[id])
-			exit(1);
+			return (pthread_mutex_unlock(&vals->mutexes.meal_log), NULL);
+		pthread_mutex_unlock(&vals->mutexes.meal_log);
 		if (set2eating(vals, &philo, id) == -1)
 			break ;
 		if (set2sleep(vals, &philo, id) == -1)
