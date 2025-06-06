@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 03:39:40 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 18:30:52 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/06/06 16:03:29 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,5 @@ void		*grim_reaper_routine(void *arg);
 void		delayed_start(long int actual_start, int id);
 int			set2sleep(t_vals *vals, t_philo *philo, int id);
 int			set2eating(t_vals *vals, t_philo *philo, int id);
-int			get_second_fork(t_philo *philo, int id);
-int			get_first_fork(t_philo *philo, int id);
+int			get_fork(t_philo *philo, int id, int fork_id);
 #endif

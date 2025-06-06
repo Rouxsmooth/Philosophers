@@ -6,7 +6,7 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 14:42:58 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 18:29:46 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/06/06 16:04:16 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	eating_with_2forks(t_vals *vals, t_philo *philo, int id)
 	long int	currtime;
 	int			fork2;
 
-	fork2 = get_second_fork(philo, id);
+	fork2 = get_fork(philo, id, 1);
 	pthread_mutex_lock(&vals->mutexes.forks[fork2]);
 	philo->fork2 = fork2;
 	pthread_mutex_lock(&vals->mutexes.message);
@@ -82,7 +82,7 @@ int	set2eating(t_vals *vals, t_philo *philo, int id)
 {
 	int			fork1;
 
-	fork1 = get_first_fork(philo, id);
+	fork1 = get_fork(philo, id, 0);
 	pthread_mutex_lock(&vals->mutexes.forks[fork1]);
 	philo->fork1 = fork1;
 	pthread_mutex_lock(&vals->mutexes.message);

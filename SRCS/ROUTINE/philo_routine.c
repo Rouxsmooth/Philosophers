@@ -6,22 +6,29 @@
 /*   By: mzaian <mzaian@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 10:48:21 by mzaian            #+#    #+#             */
-/*   Updated: 2025/05/22 18:29:36 by mzaian           ###   ########.fr       */
+/*   Updated: 2025/06/06 16:09:58 by mzaian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../INCLUDES/philo.h"
 
-int	get_first_fork(t_philo *philo, int id)
+void	stare_at_bowl(t_vals *vals, t_philo *philo, int id)
 {
-	if (id % 2 == 1)
-		return (id);
-	return ((id + 1) % philo->philos_amount);
+	get_fork(philo, id, 0);
+	while (1)
+	{
+		pthread_mutex_lock(&vals->mutexes.message);
+		if (!vals->message_allowed)
+			return (pthread_mutex_unlock(&vals->mutexes.message), (void) 0);
+		pthread_mutex_unlock(&vals->mutexes.message);
+		usleep(1);
+	}
+	return ;
 }
 
-int	get_second_fork(t_philo *philo, int id)
+int	get_fork(t_philo *philo, int id, int fork_id)
 {
-	if (id % 2 == 0)
+	if (id % 2 == fork_id)
 		return (id);
 	return ((id + 1) % philo->philos_amount);
 }
@@ -64,6 +71,8 @@ void	*philo_routine(void *arg)
 	philo = set_philos(vals);
 	philo.start_time = vals->delayed_start;
 	delayed_start(vals->delayed_start, id);
+	if (philo.philos_amount == 1)
+		return (stare_at_bowl(vals, &philo, id), NULL);
 	while (1)
 	{
 		pthread_mutex_lock(&vals->mutexes.meal_log);
