@@ -1,1 +1,0 @@
-grim reaper check le stdout qui garde un meal log. si le philo qui a mange il y a le plus longtemps n'a pas renvoye au bout de t2die usec, grim reaper ecrit les morts, empeche quiconque d'ecrire et envoie l'ordre de slay tout les threads
